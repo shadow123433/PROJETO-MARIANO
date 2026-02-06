@@ -1,176 +1,172 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Admin</title>
+    <title>Refrigeração Mariano - Sistema Administrativo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app">
-    <!-- ===== Sidebar ===== -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="logo-icon">A</div>
-            <div class="logo-text">
-                <h1>Painel</h1>
-                <span>Admin</span>
+    <div class="sidebar">
+        <h2>REFRIGERAÇÃO MARIANO</h2>
+        <button class="menu-btn active" onclick="showSection('dashboard')">📊 Dashboard</button>
+        <button class="menu-btn" onclick="showSection('vendas')">🛒 Nova Venda</button>
+        <button class="menu-btn" onclick="showSection('estoque')">📦 Estoque</button>
+        <button class="menu-btn" onclick="showSection('clientes')">👥 Clientes</button>
+        <button class="menu-btn" onclick="showSection('servicos')">🔧 Ordens de Serviço</button>
+        <button class="menu-btn" onclick="showSection('relatorios')">📈 Relatórios</button>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h2 id="page-title">Visão Geral</h2>
+            <div class="status-widget">
+                <label>Demanda do Dia:</label>
+                <select id="statusSelect" onchange="updateDailyStatus()">
+                    <option value="normal">Normal</option>
+                    <option value="parado">Parado</option>
+                    <option value="movimentado">Muito Movimentado</option>
+                </select>
+                <div id="statusLight" class="status-indicator"></div>
             </div>
         </div>
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active">
-                <svg><!-- ícone --></svg>
-                <span>Dashboard</span>
-            </a>
-            <a href="#" class="nav-item">
-                <svg><!-- ícone --></svg>
-                <span>Vendas</span>
-            </a>
-            <a href="#" class="nav-item">
-                <svg><!-- ícone --></svg>
-                <span>Produtos</span>
-            </a>
-            <a href="#" class="nav-item">
-                <svg><!-- ícone --></svg>
-                <span>Clientes</span>
-            </a>
-        </nav>
-        <div class="sidebar-footer">
-            <button class="collapse-btn">
-                <svg><!-- ícone --></svg>
-                <span>Colapsar</span>
-            </button>
+
+        <div id="dashboard" class="section active">
+            <div class="cards-container">
+                <div class="card">
+                    <h3>Vendas Hoje</h3>
+                    <p id="dash-sales-today">R$ 0,00</p>
+                </div>
+                <div class="card" style="border-left-color: var(--success);">
+                    <h3>Total Clientes</h3>
+                    <p id="dash-clients">0</p>
+                </div>
+                <div class="card" style="border-left-color: var(--warning);">
+                    <h3>Estoque Baixo</h3>
+                    <p id="dash-low-stock">0 itens</p>
+                </div>
+                <div class="card" style="border-left-color: var(--danger);">
+                    <h3>OS Pendentes</h3>
+                    <p id="dash-os-pending">0</p>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <h3>Últimas Movimentações (Log)</h3>
+                <p style="color: #666; font-size: 0.9rem;">As vendas recentes aparecerão no relatório.</p>
+            </div>
         </div>
-    </aside>
 
-    <!-- ===== Main Content ===== -->
-    <main class="main-content">
-        <!-- ===== Dashboard Page ===== -->
-        <div class="page active" id="dashboard">
-            <div class="page-header">
-                <div>
-                    <h2 class="page-title">Dashboard</h2>
-                    <p class="page-subtitle">Visão geral do sistema</p>
+        <div id="estoque" class="section">
+            <div class="form-container">
+                <h3>Cadastrar Produto</h3>
+                <div class="form-grid">
+                    <input type="text" id="prod-code" placeholder="Código do Produto">
+                    <input type="text" id="prod-name" placeholder="Nome do Produto">
+                    <input type="number" id="prod-qty" placeholder="Quantidade">
+                    <input type="number" id="prod-price" placeholder="Preço de Venda (R$)">
+                    <input type="number" id="prod-cost" placeholder="Preço de Custo (R$)">
                 </div>
-                <div class="action-buttons">
-                    <button class="btn btn-primary">Ação</button>
-                    <button class="btn btn-outline">Exportar</button>
+                <button class="action-btn" onclick="addProduct()">Salvar Produto</button>
+            </div>
+            <table id="stock-table">
+                <thead><tr><th>Cód</th><th>Produto</th><th>Qtd</th><th>Preço</th><th>Ações</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="clientes" class="section">
+            <div class="form-container">
+                <h3>Cadastro Completo de Cliente</h3>
+                <div class="form-grid">
+                    <input type="text" id="cli-name" placeholder="Nome Completo">
+                    <input type="text" id="cli-cpf" placeholder="CPF">
+                    <input type="text" id="cli-rg" placeholder="RG">
+                    <input type="text" id="cli-phone" placeholder="Celular/WhatsApp">
+                    <input type="text" id="cli-address" placeholder="Bairro/Endereço">
+                    <input type="text" id="cli-father" placeholder="Nome do Pai">
+                    <input type="text" id="cli-mother" placeholder="Nome da Mãe">
+                    <select id="cli-civil"><option value="Solteiro">Solteiro(a)</option><option value="Casado">Casado(a)</option><option value="Divorciado">Divorciado(a)</option></select>
                 </div>
+                <button class="action-btn" onclick="addClient()">Cadastrar Cliente</button>
+            </div>
+            <table id="clients-table">
+                <thead><tr><th>Nome</th><th>Bairro</th><th>Celular</th><th>CPF</th><th>Ações</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div id="vendas" class="section">
+            <div class="form-container">
+                <h3>Nova Venda</h3>
+                <div class="form-grid">
+                    <div>
+                        <label>Cliente</label>
+                        <select id="sale-client-select"><option value="Balcao">Consumidor Balcão</option></select>
+                    </div>
+                    <div>
+                        <label>Produto</label>
+                        <select id="sale-prod-select"></select>
+                    </div>
+                    <div>
+                        <label>Quantidade</label>
+                        <input type="number" id="sale-qty" value="1" min="1">
+                    </div>
+                </div>
+                <button class="action-btn" onclick="addToCart()">Adicionar ao Carrinho</button>
             </div>
 
-            <!-- ===== Stats ===== -->
-            <div class="stats-grid stats-3">
-                <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Vendas</div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Esta semana</div>
-                    </div>
-                    <div class="stat-icon primary">
-                        <svg><!-- ícone --></svg>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Clientes</div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Novos</div>
-                    </div>
-                    <div class="stat-icon success">
-                        <svg><!-- ícone --></svg>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div>
-                        <div class="stat-label">Pedidos Pendentes</div>
-                        <div class="stat-value">0</div>
-                        <div class="stat-description">Hoje</div>
-                    </div>
-                    <div class="stat-icon warning">
-                        <svg><!-- ícone --></svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ===== Tabela ===== -->
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Produto</th>
-                            <th>Preço</th>
-                            <th>Estoque</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Produto A</td>
-                            <td>R$ 50,00</td>
-                            <td>12</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-sm btn-ghost">Editar</button>
-                                    <button class="btn btn-sm btn-danger">Excluir</button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Produto B</td>
-                            <td>R$ 30,00</td>
-                            <td>5</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-sm btn-ghost">Editar</button>
-                                    <button class="btn btn-sm btn-danger">Excluir</button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
+            <div class="form-container">
+                <h3>Carrinho</h3>
+                <table id="cart-table">
+                    <thead><tr><th>Produto</th><th>Qtd</th><th>Unitário</th><th>Total</th><th>Remover</th></tr></thead>
+                    <tbody></tbody>
                 </table>
-            </div>
-        </div>
-
-        <!-- ===== Modal Exemplo ===== -->
-        <div class="modal" id="modal-example">
-            <div class="modal-content modal-sm">
-                <div class="modal-header">
-                    <h2>Detalhes do Produto</h2>
-                    <button class="modal-close">&times;</button>
+                <div style="text-align: right; margin-top: 20px;">
+                    <h2>Total: R$ <span id="cart-total">0.00</span></h2>
+                    <button class="action-btn" style="background: var(--success);" onclick="finalizeSale()">Finalizar Venda</button>
                 </div>
-                <form>
-                    <div class="form-group">
-                        <label for="produto">Produto</label>
-                        <input type="text" id="produto" class="input">
-                    </div>
-                    <div class="form-group">
-                        <label for="quantidade">Quantidade</label>
-                        <input type="number" id="quantidade" class="input">
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-outline" type="button">Cancelar</button>
-                        <button class="btn btn-primary" type="submit">Salvar</button>
-                    </div>
-                </form>
             </div>
         </div>
 
-        <!-- ===== Toast Exemplo ===== -->
-        <div class="toast-container">
-            <div class="toast success">
-                <svg><!-- ícone --></svg>
-                <span>Operação realizada com sucesso!</span>
-            </div>
-            <div class="toast error">
-                <svg><!-- ícone --></svg>
-                <span>Erro ao processar ação!</span>
+        <div id="servicos" class="section">
+             <div class="form-container">
+                <h3>Nova Ordem de Serviço (OS)</h3>
+                <textarea id="os-desc" placeholder="Descrição do problema (ex: Geladeira não gela, Troca de motor)" rows="3"></textarea>
+                <div class="form-grid">
+                    <select id="os-client-select"></select>
+                    <select id="os-status"><option value="Pendente">Pendente</option><option value="Em Andamento">Em Andamento</option><option value="Concluido">Concluído</option></select>
+                    <input type="number" id="os-value" placeholder="Valor do Serviço (Mão de obra)">
+                </div>
+                <button class="action-btn" onclick="addOS()">Abrir OS</button>
+             </div>
+             <table id="os-table">
+                 <thead><tr><th>ID</th><th>Cliente</th><th>Serviço</th><th>Status</th><th>Valor</th></tr></thead>
+                 <tbody></tbody>
+             </table>
+        </div>
+
+        <div id="relatorios" class="section">
+            <div class="form-container">
+                <h3>Resumo Financeiro</h3>
+                <div class="cards-container">
+                    <div class="card">
+                        <h3>Vendas Totais</h3>
+                        <p id="rep-total-sales">R$ 0,00</p>
+                    </div>
+                    <div class="card">
+                        <h3>Serviços Totais</h3>
+                        <p id="rep-total-os">R$ 0,00</p>
+                    </div>
+                </div>
+                <h3>Zona de Perigo</h3>
+                <button class="action-btn" onclick="clearAllData()" style="background: var(--danger);">Resetar Sistema</button>
             </div>
         </div>
-    </main>
-</div>
 
-<script src="script.js"></script>
+    </div>
 
+    <script src="script.js"></script>
 </body>
 </html>
